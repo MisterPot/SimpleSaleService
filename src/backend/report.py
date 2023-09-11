@@ -19,9 +19,9 @@ from .models import (
 )
 from .utils import Money
 
-root = Path(__file__).parent
-font = str(root / Path('FreeSans.ttf'))
-reports = str(root / Path('static') / Path('reports'))
+root = os.path.dirname(__file__)
+font = os.path.join(root, 'FreeSans.ttf')
+reports = os.path.join(root, 'static', 'reports')
 
 
 class Report(ABC):
