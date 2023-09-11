@@ -56,7 +56,7 @@ class SingleInvoiceResourceMeta(Resource, InvoiceMeta):
     def get(self, invoice_id: int):
         return self.__model__.query.get(invoice_id)
 
-    def options(self) -> Response:
+    def options(self, invoice_id: int) -> Response:
         return make_response()
 
     def delete(self, invoice_id: int) -> int:
