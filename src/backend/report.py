@@ -1,9 +1,11 @@
 import datetime
 import enum
 import os
+import pathlib
 from abc import ABC, abstractmethod
 from pathlib import Path
 from typing import List, Any, Union, Tuple
+import platform
 
 from fpdf import FPDF
 from sqlalchemy import func
@@ -19,9 +21,14 @@ from .models import (
 )
 from .utils import Money
 
-root = os.path.dirname(__file__)
-font = os.path.join(root, 'FreeSans.ttf')
-reports = os.path.join(root, 'static', 'reports')
+
+if platform.system() == 'Linux':
+    pathlib.WindowsPath = pathlib.PosixPath
+
+
+root = Path(__file__).parent
+font = root / Path('FreeSans.ttf')
+reports = root / Path('static') / Path('reports')
 
 
 class Report(ABC):
