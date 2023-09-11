@@ -26,11 +26,6 @@ if platform.system() == 'Linux':
     pathlib.WindowsPath = pathlib.PosixPath
 
 
-root = Path(__file__).parent
-font = root / Path('FreeSans.ttf')
-reports = root / Path('static') / Path('reports')
-
-
 class Report(ABC):
     """
     Represents any report
@@ -59,6 +54,9 @@ class Report(ABC):
         """
 
         pdf = FPDF()
+        root = Path(__file__).parent
+        font = root / Path('FreeSans.ttf')
+        reports = root / Path('static') / Path('reports')
         filename = self.get_filename(*args, **kwargs)
 
         pdf.add_page()
