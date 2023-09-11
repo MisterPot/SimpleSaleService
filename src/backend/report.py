@@ -20,8 +20,8 @@ from .models import (
 from .utils import Money
 
 root = Path(__file__).parent
-font = root / Path('FreeSans.ttf')
-reports = root / Path('static') / Path('reports')
+font = str(root / Path('FreeSans.ttf'))
+reports = str(root / Path('static') / Path('reports'))
 
 
 class Report(ABC):
