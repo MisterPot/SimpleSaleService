@@ -145,6 +145,25 @@ def delete_empty_income_invoice(mapper, connection, target):
 @event.listens_for(SaleInvoiceItem, 'after_delete')
 def delete_empty_sale_invoice(mapper, connection, target):
     invoice = target.sale_invoice
+    to_add = target.quantity
+
+    for consignment in target.product.consignments[::-1]:
+
+        if not (consignment.current_quantity >= consignment.quantity):
+
+            current_to_add = (
+                to_add if to_add + consignment.current_quantity <= consignment.quantity
+                else to_add - (consignment.current_quantity + to_add - consignment.quantity)
+            )
+
+            consignment.current_quantity += current_to_add
+            to_add -= current_to_add
+
+        if consignment.current_quantity > 0:
+            consignment.depreciated = False
+
+        if to_add == 0:
+            break
 
     if not invoice.items:
         db.session.delete(invoice)
