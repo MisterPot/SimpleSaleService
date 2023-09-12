@@ -1,6 +1,7 @@
 from sqlalchemy import event
 from sqlalchemy.ext.hybrid import hybrid_property
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy.orm.attributes import set_committed_value
 
 from .app import app
 
@@ -153,14 +154,24 @@ def delete_empty_sale_invoice(mapper, connection, target):
 
             current_to_add = (
                 to_add if to_add + consignment.current_quantity <= consignment.quantity
-                else to_add - (consignment.current_quantity + to_add - consignment.quantity)
+                else to_add - ((consignment.current_quantity + to_add) - consignment.quantity)
             )
 
-            consignment.current_quantity += current_to_add
-            to_add -= current_to_add
+            set_committed_value(
+                consignment, 'current_quantity', consignment.current_quantity + current_to_add
+            )
 
-        if consignment.current_quantity > 0:
-            consignment.depreciated = False
+            connection.execute(
+                Consignment.__table__.
+                update().
+                values(
+                    current_quantity=consignment.current_quantity,
+                    depreciated=consignment.current_quantity == 0
+                ).
+                where(Consignment.id == consignment.id)
+            )
+
+            to_add -= current_to_add
 
         if to_add == 0:
             break
